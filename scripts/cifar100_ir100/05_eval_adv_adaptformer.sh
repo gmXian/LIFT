@@ -29,4 +29,5 @@ python tools/eval_adv_lift.py \
   --alpha "${ALPHA}" \
   --steps "${STEPS}" \
   --out_csv "${OUT_DIR}/adaptformer_${ATTACK}_steps${STEPS}_eps${EPS}_summary.csv" \
-  --classwise_csv "${OUT_DIR}/adaptformer_${ATTACK}_steps${STEPS}_eps${EPS}_classwise.csv"
+  --classwise_csv "${OUT_DIR}/adaptformer_${ATTACK}_steps${STEPS}_eps${EPS}_classwise.csv" \
+  adaptformer True
