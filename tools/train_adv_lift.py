@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import datetime
 import random
@@ -13,6 +14,9 @@ from torch.cuda.amp import autocast
 from torch.utils.data import DataLoader, Dataset, Subset
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
+
+# Ensure project root is on sys.path so sibling packages (e.g. `datasets`) import correctly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import datasets
 from utils.config import _C as cfg

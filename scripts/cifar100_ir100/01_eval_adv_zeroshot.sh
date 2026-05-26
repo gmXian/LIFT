@@ -3,12 +3,12 @@ set -euo pipefail
 
 ROOT=${ROOT:-./data}
 GPU=${GPU:-0}
-ATTACK=${ATTACK:-pgd}
-EPS=${EPS:-1.0}
+ATTACK=${ATTACK:-fgsm}
+EPS=${EPS:-0.25}
 ALPHA=${ALPHA:-0.25}
-STEPS=${STEPS:-10}
+STEPS=${STEPS:-1}
 SEED=${SEED:-0}
-BATCH_SIZE=${BATCH_SIZE:-64}
+BATCH_SIZE=${BATCH_SIZE:-256}
 NUM_WORKERS=${NUM_WORKERS:-8}
 OUT_DIR=${OUT_DIR:-output/adv_eval/cifar100_ir100}
 
