@@ -3,12 +3,16 @@ import time
 import datetime
 import random
 import argparse
+import shutil
 import numpy as np
+from collections import defaultdict
+from PIL import Image
 
 import torch
-import torch.nn.functional as F
 from torch.cuda.amp import autocast
+from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
+from torchvision import transforms
 
 from utils.config import _C as cfg
 from utils.logger import setup_logger
@@ -88,11 +92,208 @@ def pgd_linf_attack(model, criterion, images_norm, labels, mean, std,
     return normalize(x_adv, mean, std).detach()
 
 
+class LTFileDataset(Dataset):
+    """Dataset backed by an LT split txt file, e.g. ImageNet_LT_val.txt."""
+
+    def __init__(self, root, txt_path, transform=None):
+        self.root = root
+        self.txt_path = txt_path
+        self.transform = transform
+        self.img_path = []
+        self.labels = []
+
+        with open(txt_path, "r") as f:
+            for line in f:
+                rel_path, label = line.strip().split()[:2]
+                self.img_path.append(os.path.join(root, rel_path))
+                self.labels.append(int(label))
+
+        self.cls_num_list = self.get_cls_num_list()
+        self.num_classes = len(self.cls_num_list)
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, index):
+        path = self.img_path[index]
+        label = self.labels[index]
+        with open(path, "rb") as f:
+            image = Image.open(f).convert("RGB")
+        if self.transform is not None:
+            image = self.transform(image)
+        return image, label
+
+    def get_cls_num_list(self):
+        counter = defaultdict(int)
+        for label in self.labels:
+            counter[label] += 1
+        labels = sorted(counter.keys())
+        return [counter[label] for label in labels]
+
+
+def build_single_crop_eval_transform(cfg, mean, std):
+    # Match LIFT's default non-TTE test transform: output shape [1, C, H, W].
+    resolution = cfg.resolution
+    return transforms.Compose([
+        transforms.Resize(resolution * 8 // 7),
+        transforms.CenterCrop(resolution),
+        transforms.Lambda(lambda crop: torch.stack([transforms.ToTensor()(crop)])),
+        transforms.Normalize(mean.flatten().cpu().tolist(), std.flatten().cpu().tolist()),
+    ])
+
+
+def build_checkpoint_val_loader(trainer, mean, std):
+    """Build validation loader for checkpoint selection.
+
+    For ImageNet-LT, use the explicit ImageNet_LT_val.txt split when available.
+    For datasets without a dedicated val split in the current repo, fall back to
+    trainer.test_loader and print a warning. The fallback is for quick debugging
+    only and should not be used for formal model selection.
+    """
+    cfg = trainer.cfg
+    if cfg.dataset == "ImageNet_LT":
+        val_txt = "./datasets/ImageNet_LT/ImageNet_LT_val.txt"
+        if os.path.exists(val_txt):
+            transform = build_single_crop_eval_transform(cfg, mean, std)
+            val_dataset = LTFileDataset(cfg.root, val_txt, transform=transform)
+            val_loader = DataLoader(
+                val_dataset,
+                batch_size=64,
+                shuffle=False,
+                num_workers=cfg.num_workers,
+                pin_memory=True,
+            )
+            print(f"Checkpoint selection uses ImageNet-LT val split: {val_txt}")
+            return val_loader
+        print(f"[warning] ImageNet-LT val split not found at {val_txt}; falling back to test_loader.")
+
+    print("[warning] No dedicated val split is configured for this dataset; falling back to test_loader for checkpoint selection.")
+    return trainer.test_loader
+
+
+@torch.no_grad()
+def forward_eval_crops(model, image):
+    """Forward a batch produced by LIFT's eval transform."""
+    if image.dim() == 4:
+        return model(image)
+
+    _bsz, _ncrops, _c, _h, _w = image.size()
+    image_flat = image.view(_bsz * _ncrops, _c, _h, _w)
+    if _ncrops <= 5:
+        output = model(image_flat)
+        output = output.view(_bsz, _ncrops, -1).mean(dim=1)
+    else:
+        outputs = []
+        image_view = image.view(_bsz, _ncrops, _c, _h, _w)
+        for k in range(_ncrops):
+            outputs.append(model(image_view[:, k]))
+        output = torch.stack(outputs).mean(dim=0)
+    return output
+
+
+def evaluate_checkpoint_metrics(trainer, val_loader, mean, std,
+                                adv_eps, adv_alpha, adv_steps, adv_random_start=True):
+    """Evaluate clean and adversarial accuracy on the checkpoint-selection val split."""
+    if trainer.tuner is not None:
+        trainer.tuner.eval()
+    if trainer.head is not None:
+        trainer.head.eval()
+
+    device = trainer.device
+    clean_correct = 0
+    adv_correct = 0
+    total = 0
+
+    for batch in val_loader:
+        image = batch[0].to(device)
+        label = batch[1].to(device)
+
+        # LIFT eval transform returns [B, 1, C, H, W] under non-TTE.
+        if image.dim() == 5:
+            if image.size(1) != 1:
+                # Keep clean evaluation faithful to crop averaging, but use the
+                # first crop for adversarial checkpoint selection to avoid
+                # expensive multi-crop attacks during training.
+                image_for_adv = image[:, 0]
+            else:
+                image_for_adv = image[:, 0]
+        else:
+            image_for_adv = image
+
+        with torch.no_grad():
+            output_clean = forward_eval_crops(trainer.model, image)
+            clean_correct += output_clean.argmax(dim=1).eq(label).sum().item()
+
+        x_adv = pgd_linf_attack(
+            trainer.model,
+            trainer.criterion,
+            image_for_adv,
+            label,
+            mean,
+            std,
+            eps=adv_eps,
+            alpha=adv_alpha,
+            steps=adv_steps,
+            random_start=adv_random_start,
+        )
+        with torch.no_grad():
+            output_adv = trainer.model(x_adv)
+            adv_correct += output_adv.argmax(dim=1).eq(label).sum().item()
+
+        total += label.numel()
+
+    clean_acc = 100.0 * clean_correct / max(total, 1)
+    adv_acc = 100.0 * adv_correct / max(total, 1)
+
+    if trainer.tuner is not None:
+        trainer.tuner.train()
+    if trainer.head is not None:
+        trainer.head.train()
+
+    return clean_acc, adv_acc
+
+
+def checkpoint_state(trainer, epoch, best_clean, best_robust):
+    checkpoint = {
+        "epoch": epoch,
+        "tuner": trainer.tuner.state_dict(),
+        "head": trainer.head.state_dict(),
+        "best_clean": best_clean,
+        "best_robust": best_robust,
+        "optimizer": trainer.optim.state_dict(),
+        "scheduler": trainer.sched.state_dict(),
+    }
+    return checkpoint
+
+
+def save_checkpoint_files(trainer, epoch, best_clean, best_robust,
+                          is_best_clean=False, is_best_robust=False):
+    os.makedirs(trainer.cfg.output_dir, exist_ok=True)
+    latest_path = os.path.join(trainer.cfg.output_dir, "checkpoint.pth.tar")
+    state = checkpoint_state(trainer, epoch, best_clean, best_robust)
+    torch.save(state, latest_path)
+
+    if is_best_clean:
+        clean_path = os.path.join(trainer.cfg.output_dir, "model_best_clean.pth.tar")
+        shutil.copyfile(latest_path, clean_path)
+        print(f"Saved best clean checkpoint to {clean_path}")
+
+    if is_best_robust:
+        robust_path = os.path.join(trainer.cfg.output_dir, "model_best_robust.pth.tar")
+        shutil.copyfile(latest_path, robust_path)
+        print(f"Saved best robust checkpoint to {robust_path}")
+
+
 def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
-              adv_random_start=True):
+              adv_random_start=True, val_adv_eps=None, val_adv_alpha=None,
+              val_adv_steps=None):
     cfg = trainer.cfg
     device = trainer.device
     mean, std = get_mean_std(cfg, device)
+    val_adv_eps = adv_eps if val_adv_eps is None else val_adv_eps
+    val_adv_alpha = adv_alpha if val_adv_alpha is None else val_adv_alpha
+    val_adv_steps = adv_steps if val_adv_steps is None else val_adv_steps
+    val_loader = build_checkpoint_val_loader(trainer, mean, std)
 
     writer_dir = os.path.join(cfg.output_dir, "tensorboard")
     os.makedirs(writer_dir, exist_ok=True)
@@ -100,9 +301,12 @@ def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
     trainer._writer = SummaryWriter(log_dir=writer_dir)
 
     print("Adversarial fine-tuning setting:")
-    print(f"  attack=PGD-{adv_steps}, norm=L_inf")
-    print(f"  eps={adv_eps * 255:.4f}/255, alpha={adv_alpha * 255:.4f}/255")
+    print(f"  train attack=PGD-{adv_steps}, norm=L_inf")
+    print(f"  train eps={adv_eps * 255:.4f}/255, alpha={adv_alpha * 255:.4f}/255")
     print(f"  random_start={adv_random_start}, adv_lambda={adv_lambda}")
+    print("Validation checkpoint selection setting:")
+    print(f"  val clean metric: clean accuracy on val split")
+    print(f"  val robust metric: PGD-{val_adv_steps}, eps={val_adv_eps * 255:.4f}/255, alpha={val_adv_alpha * 255:.4f}/255")
 
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -112,6 +316,8 @@ def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
     acc_meter = AverageMeter(ema=True)
     cls_meters = [AverageMeter(ema=True) for _ in range(trainer.num_classes)]
 
+    best_clean = -1.0
+    best_robust = -1.0
     time_start = time.time()
     num_epochs = cfg.num_epochs
 
@@ -228,12 +434,43 @@ def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
         trainer.sched.step()
         torch.cuda.empty_cache()
 
+        val_clean, val_robust = evaluate_checkpoint_metrics(
+            trainer,
+            val_loader,
+            mean,
+            std,
+            adv_eps=val_adv_eps,
+            adv_alpha=val_adv_alpha,
+            adv_steps=val_adv_steps,
+            adv_random_start=adv_random_start,
+        )
+        is_best_clean = val_clean > best_clean
+        is_best_robust = val_robust > best_robust
+        best_clean = max(best_clean, val_clean)
+        best_robust = max(best_robust, val_robust)
+
+        trainer._writer.add_scalar("val/clean_acc", val_clean, epoch_idx + 1)
+        trainer._writer.add_scalar("val/robust_acc", val_robust, epoch_idx + 1)
+        print(
+            f"Epoch [{epoch_idx + 1}/{num_epochs}] val_clean={val_clean:.4f} "
+            f"val_robust={val_robust:.4f} best_clean={best_clean:.4f} "
+            f"best_robust={best_robust:.4f}"
+        )
+        save_checkpoint_files(
+            trainer,
+            epoch=epoch_idx + 1,
+            best_clean=best_clean,
+            best_robust=best_robust,
+            is_best_clean=is_best_clean,
+            is_best_robust=is_best_robust,
+        )
+
     print("Finish adversarial fine-tuning")
     elapsed = round(time.time() - time_start)
     elapsed = str(datetime.timedelta(seconds=elapsed))
     print(f"Time elapsed: {elapsed}")
 
-    trainer.save_model(cfg.output_dir)
+    # checkpoint.pth.tar has already been saved at the end of every epoch.
     trainer.test()
     trainer._writer.close()
 
@@ -278,6 +515,9 @@ def main(args):
         adv_steps=args.adv_steps,
         adv_lambda=args.adv_lambda,
         adv_random_start=not args.no_random_start,
+        val_adv_eps=args.val_adv_eps / 255.0,
+        val_adv_alpha=args.val_adv_alpha / 255.0,
+        val_adv_steps=args.val_adv_steps,
     )
 
 
@@ -289,6 +529,9 @@ if __name__ == "__main__":
     parser.add_argument("--adv_alpha", type=float, default=1.0, help="PGD step size in /255 units")
     parser.add_argument("--adv_steps", type=int, default=2, help="PGD steps for adversarial training")
     parser.add_argument("--adv_lambda", type=float, default=1.0, help="weight of adversarial loss")
+    parser.add_argument("--val_adv_eps", type=float, default=1.0, help="L_inf epsilon in /255 units for robust val checkpoint selection")
+    parser.add_argument("--val_adv_alpha", type=float, default=1.0, help="PGD step size in /255 units for robust val checkpoint selection")
+    parser.add_argument("--val_adv_steps", type=int, default=2, help="PGD steps for robust val checkpoint selection")
     parser.add_argument("--no_random_start", action="store_true", help="disable PGD random start")
     parser.add_argument("opts", default=None, nargs=argparse.REMAINDER,
                         help="modify config options using the command-line")
