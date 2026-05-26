@@ -4,8 +4,8 @@ set -euo pipefail
 ROOT=${ROOT:-./data}
 GPU=${GPU:-0}
 ATTACK=${ATTACK:-pgd}
-EPS=${EPS:-4.0}
-ALPHA=${ALPHA:-1.0}
+EPS=${EPS:-1.0}
+ALPHA=${ALPHA:-0.25}
 STEPS=${STEPS:-10}
 SEED=${SEED:-0}
 BATCH_SIZE=${BATCH_SIZE:-64}
