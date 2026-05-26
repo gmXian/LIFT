@@ -10,10 +10,11 @@ from PIL import Image
 
 import torch
 from torch.cuda.amp import autocast
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, Subset
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import transforms
 
+import datasets
 from utils.config import _C as cfg
 from utils.logger import setup_logger
 from utils.meter import AverageMeter
@@ -62,14 +63,7 @@ def project_linf(x_adv, x_orig, eps):
 
 def pgd_linf_attack(model, criterion, images_norm, labels, mean, std,
                     eps, alpha, steps, random_start=True):
-    """Generate L_inf adversarial examples in raw pixel space.
-
-    Args:
-        images_norm: normalized images consumed by the LIFT model.
-        eps/alpha: raw-pixel scale, e.g. 1.0 / 255.
-    Returns:
-        normalized adversarial images.
-    """
+    """Generate L_inf adversarial examples in raw pixel space."""
     images_raw = denormalize(images_norm.detach(), mean, std).clamp(0.0, 1.0)
 
     if random_start and eps > 0:
@@ -127,12 +121,10 @@ class LTFileDataset(Dataset):
         counter = defaultdict(int)
         for label in self.labels:
             counter[label] += 1
-        labels = sorted(counter.keys())
-        return [counter[label] for label in labels]
+        return [counter[label] for label in sorted(counter.keys())]
 
 
 def build_single_crop_eval_transform(cfg, mean, std):
-    # Match LIFT's default non-TTE test transform: output shape [1, C, H, W].
     resolution = cfg.resolution
     return transforms.Compose([
         transforms.Resize(resolution * 8 // 7),
@@ -142,15 +134,84 @@ def build_single_crop_eval_transform(cfg, mean, std):
     ])
 
 
-def build_checkpoint_val_loader(trainer, mean, std):
-    """Build validation loader for checkpoint selection.
+def stratified_holdout_indices(labels, val_fraction=0.1, seed=0):
+    labels = np.asarray(labels)
+    rng = np.random.default_rng(seed)
+    train_indices, val_indices = [], []
+    for c in sorted(np.unique(labels)):
+        idx = np.where(labels == c)[0]
+        rng.shuffle(idx)
+        if len(idx) <= 1 or val_fraction <= 0:
+            n_val = 0
+        else:
+            n_val = max(1, int(round(len(idx) * val_fraction)))
+            n_val = min(n_val, len(idx) - 1)
+        val_indices.extend(idx[:n_val].tolist())
+        train_indices.extend(idx[n_val:].tolist())
+    rng.shuffle(train_indices)
+    rng.shuffle(val_indices)
+    return train_indices, val_indices
 
-    For ImageNet-LT, use the explicit ImageNet_LT_val.txt split when available.
-    For datasets without a dedicated val split in the current repo, fall back to
-    trainer.test_loader and print a warning. The fallback is for quick debugging
-    only and should not be used for formal model selection.
-    """
+
+def maybe_setup_cifar_holdout_val(trainer, mean, std, val_fraction, val_seed):
     cfg = trainer.cfg
+    if not cfg.dataset.startswith("CIFAR100_IR"):
+        return
+    if val_fraction <= 0:
+        print("[warning] CIFAR-LT has no official val split and cifar_val_fraction <= 0; checkpoint selection will fall back to test_loader.")
+        return
+
+    train_dataset_aug = trainer.train_loader.dataset
+    if not hasattr(train_dataset_aug, "labels"):
+        print("[warning] CIFAR train dataset has no labels attribute; checkpoint selection will fall back to test_loader.")
+        return
+
+    train_indices, val_indices = stratified_holdout_indices(train_dataset_aug.labels, val_fraction, val_seed)
+    if len(val_indices) == 0:
+        print("[warning] Empty CIFAR holdout val split; checkpoint selection will fall back to test_loader.")
+        return
+
+    # Replace the training loader with the train subset to avoid selecting checkpoints
+    # on examples that are still used for AFT updates.
+    trainer.train_loader = DataLoader(
+        Subset(train_dataset_aug, train_indices),
+        batch_size=cfg.micro_batch_size,
+        shuffle=True,
+        num_workers=cfg.num_workers,
+        pin_memory=True,
+    )
+
+    # Recompute class counts for the held-out training subset and rebuild the loss
+    # so LA/CB-style losses use the actual AFT training distribution.
+    train_labels = np.asarray(train_dataset_aug.labels)[train_indices]
+    cls_num_list = []
+    for c in range(trainer.num_classes):
+        cls_num_list.append(int((train_labels == c).sum()))
+    trainer.cls_num_list = cls_num_list
+    trainer.build_criterion()
+
+    # Build a deterministic eval-view dataset with the same imbalanced CIFAR subset.
+    eval_transform = build_single_crop_eval_transform(cfg, mean, std)
+    eval_dataset = getattr(datasets, cfg.dataset)(cfg.root, train=True, transform=eval_transform)
+    trainer.checkpoint_val_loader = DataLoader(
+        Subset(eval_dataset, val_indices),
+        batch_size=64,
+        shuffle=False,
+        num_workers=cfg.num_workers,
+        pin_memory=True,
+    )
+    print(
+        f"Checkpoint selection uses deterministic {cfg.dataset} holdout val split: "
+        f"fraction={val_fraction}, seed={val_seed}, train={len(train_indices)}, val={len(val_indices)}"
+    )
+
+
+def build_checkpoint_val_loader(trainer, mean, std):
+    """Build validation loader for checkpoint selection."""
+    cfg = trainer.cfg
+    if hasattr(trainer, "checkpoint_val_loader"):
+        return trainer.checkpoint_val_loader
+
     if cfg.dataset == "ImageNet_LT":
         val_txt = "./datasets/ImageNet_LT/ImageNet_LT_val.txt"
         if os.path.exists(val_txt):
@@ -173,7 +234,6 @@ def build_checkpoint_val_loader(trainer, mean, std):
 
 @torch.no_grad()
 def forward_eval_crops(model, image):
-    """Forward a batch produced by LIFT's eval transform."""
     if image.dim() == 4:
         return model(image)
 
@@ -193,7 +253,6 @@ def forward_eval_crops(model, image):
 
 def evaluate_checkpoint_metrics(trainer, val_loader, mean, std,
                                 adv_eps, adv_alpha, adv_steps, adv_random_start=True):
-    """Evaluate clean and adversarial accuracy on the checkpoint-selection val split."""
     if trainer.tuner is not None:
         trainer.tuner.eval()
     if trainer.head is not None:
@@ -208,15 +267,8 @@ def evaluate_checkpoint_metrics(trainer, val_loader, mean, std,
         image = batch[0].to(device)
         label = batch[1].to(device)
 
-        # LIFT eval transform returns [B, 1, C, H, W] under non-TTE.
         if image.dim() == 5:
-            if image.size(1) != 1:
-                # Keep clean evaluation faithful to crop averaging, but use the
-                # first crop for adversarial checkpoint selection to avoid
-                # expensive multi-crop attacks during training.
-                image_for_adv = image[:, 0]
-            else:
-                image_for_adv = image[:, 0]
+            image_for_adv = image[:, 0]
         else:
             image_for_adv = image
 
@@ -254,7 +306,7 @@ def evaluate_checkpoint_metrics(trainer, val_loader, mean, std,
 
 
 def checkpoint_state(trainer, epoch, best_clean, best_robust):
-    checkpoint = {
+    return {
         "epoch": epoch,
         "tuner": trainer.tuner.state_dict(),
         "head": trainer.head.state_dict(),
@@ -263,7 +315,6 @@ def checkpoint_state(trainer, epoch, best_clean, best_robust):
         "optimizer": trainer.optim.state_dict(),
         "scheduler": trainer.sched.state_dict(),
     }
-    return checkpoint
 
 
 def save_checkpoint_files(trainer, epoch, best_clean, best_robust,
@@ -305,7 +356,7 @@ def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
     print(f"  train eps={adv_eps * 255:.4f}/255, alpha={adv_alpha * 255:.4f}/255")
     print(f"  random_start={adv_random_start}, adv_lambda={adv_lambda}")
     print("Validation checkpoint selection setting:")
-    print(f"  val clean metric: clean accuracy on val split")
+    print("  val clean metric: clean accuracy on val split")
     print(f"  val robust metric: PGD-{val_adv_steps}, eps={val_adv_eps * 255:.4f}/255, alpha={val_adv_alpha * 255:.4f}/255")
 
     batch_time = AverageMeter()
@@ -470,7 +521,6 @@ def train_adv(trainer, adv_eps, adv_alpha, adv_steps, adv_lambda,
     elapsed = str(datetime.timedelta(seconds=elapsed))
     print(f"Time elapsed: {elapsed}")
 
-    # checkpoint.pth.tar has already been saved at the end of every epoch.
     trainer.test()
     trainer._writer.close()
 
@@ -508,6 +558,9 @@ def main(args):
         torch.backends.cudnn.benchmark = True
 
     trainer = Trainer(cfg)
+    mean, std = get_mean_std(cfg, trainer.device)
+    maybe_setup_cifar_holdout_val(trainer, mean, std, args.cifar_val_fraction, args.cifar_val_seed)
+
     train_adv(
         trainer,
         adv_eps=args.adv_eps / 255.0,
@@ -532,6 +585,8 @@ if __name__ == "__main__":
     parser.add_argument("--val_adv_eps", type=float, default=1.0, help="L_inf epsilon in /255 units for robust val checkpoint selection")
     parser.add_argument("--val_adv_alpha", type=float, default=1.0, help="PGD step size in /255 units for robust val checkpoint selection")
     parser.add_argument("--val_adv_steps", type=int, default=2, help="PGD steps for robust val checkpoint selection")
+    parser.add_argument("--cifar_val_fraction", type=float, default=0.1, help="stratified holdout fraction from CIFAR-LT train set for checkpoint selection")
+    parser.add_argument("--cifar_val_seed", type=int, default=0, help="seed for deterministic CIFAR-LT holdout split")
     parser.add_argument("--no_random_start", action="store_true", help="disable PGD random start")
     parser.add_argument("opts", default=None, nargs=argparse.REMAINDER,
                         help="modify config options using the command-line")
