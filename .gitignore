@@ -1,5 +1,7 @@
-output/
+
 *pyc
 data/
 datasets/
 logs/
+*pth.tar
+**/tensorboard/

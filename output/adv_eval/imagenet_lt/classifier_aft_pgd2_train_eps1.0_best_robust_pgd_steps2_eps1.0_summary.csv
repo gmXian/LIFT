@@ -1,0 +1,5 @@
+model_dir,dataset,backbone,attack,eps,alpha,steps,split,num_classes,num_samples,clean_micro,adv_micro,clean_macro,adv_macro,gap_micro,gap_macro,adv_worst
+output/imagenet_lt_clip_vitb16_classifier_only_aft_pgd2_eps1.0,ImageNet_LT,CLIP-ViT-B/16,pgd,1.0,1.0,2,all,1000,50000,0.71642,0.08578,0.7164200000000001,0.08578,-0.63064,-0.6306400000000001,0.0
+output/imagenet_lt_clip_vitb16_classifier_only_aft_pgd2_eps1.0,ImageNet_LT,CLIP-ViT-B/16,pgd,1.0,1.0,2,many,385,19250,0.7344415584415585,0.10114285714285715,0.7344415584415585,0.10114285714285716,-0.6332987012987012,-0.6332987012987012,0.0
+output/imagenet_lt_clip_vitb16_classifier_only_aft_pgd2_eps1.0,ImageNet_LT,CLIP-ViT-B/16,pgd,1.0,1.0,2,medium,479,23950,0.7190814196242171,0.08041753653444676,0.7190814196242171,0.08041753653444678,-0.6386638830897704,-0.6386638830897704,0.0
+output/imagenet_lt_clip_vitb16_classifier_only_aft_pgd2_eps1.0,ImageNet_LT,CLIP-ViT-B/16,pgd,1.0,1.0,2,few,136,6800,0.6560294117647059,0.0611764705882353,0.6560294117647059,0.0611764705882353,-0.5948529411764706,-0.5948529411764706,0.0

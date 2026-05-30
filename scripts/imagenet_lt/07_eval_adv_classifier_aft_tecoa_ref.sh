@@ -63,7 +63,8 @@ run_eval() {
     --alpha "${ALPHA}" \
     --steps "${STEPS}" \
     --out_csv "${OUT_DIR}/classifier_aft_pgd2_train_eps1.0_${ckpt_label}_${ATTACK}_steps${STEPS}_eps${EPS}_summary.csv" \
-    --classwise_csv "${OUT_DIR}/classifier_aft_pgd2_train_eps1.0_${ckpt_label}_${ATTACK}_steps${STEPS}_eps${EPS}_classwise.csv"
+    --classwise_csv "${OUT_DIR}/classifier_aft_pgd2_train_eps1.0_${ckpt_label}_${ATTACK}_steps${STEPS}_eps${EPS}_classwise.csv"\
+    --gpu 1
 }
 
 run_eval "latest" "${BACKUP_CKPT}"

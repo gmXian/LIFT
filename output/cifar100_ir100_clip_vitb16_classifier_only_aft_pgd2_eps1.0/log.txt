@@ -1,0 +1,267 @@
+** Config **
+adapter: False
+adapter_dim: None
+adaptformer: False
+adaptformer_scale: learnable
+backbone: CLIP-ViT-B/16
+batch_size: 128
+bias_tuning: False
+bn_tuning: False
+classifier: CosineClassifier
+dataset: CIFAR100_IR100
+deterministic: True
+expand: 24
+full_tuning: False
+gpu: 0
+imb_factor: None
+init_head: text_feat
+ln_tuning: False
+lora: False
+lora_mlp: False
+loss_type: LA
+lr: 0.01
+mask: False
+mask_ratio: None
+mask_seed: None
+micro_batch_size: 64
+model_dir: None
+momentum: 0.9
+num_epochs: 10
+num_workers: 8
+output_dir: ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0
+partial: None
+prec: amp
+print_freq: 10
+prompt: default
+randaug_times: 1
+resolution: 224
+root: ./data
+scale: 25
+seed: 0
+ssf_attn: False
+ssf_ln: False
+ssf_mlp: False
+test_only: False
+test_train: False
+tte: False
+tte_mode: fivecrop
+vpt_deep: False
+vpt_len: None
+vpt_shallow: False
+weight_decay: 0.0005
+zero_shot: False
+************
+Setting fixed seed: 0
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Total training points: 10847
+Building model
+Loading CLIP (backbone: CLIP-ViT-B/16)
+Turning off gradients in the model
+Turning on gradients in the tuner
+Turning on gradients in the head
+Total params: 149697536
+Tuned params: 0
+Head params: 76800
+Initialize head with text features
+Files already downloaded and verified
+Checkpoint selection uses deterministic CIFAR100_IR100 holdout val split: fraction=0.1, seed=0, train=9754, val=1093
+Initialize tensorboard (log_dir=./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/tensorboard)
+Adversarial fine-tuning setting:
+  train attack=PGD-2, norm=L_inf
+  train eps=1.0000/255, alpha=1.0000/255
+  random_start=True, adv_lambda=1.0
+Validation checkpoint selection setting:
+  val clean metric: clean accuracy on val split
+  val robust metric: PGD-2, eps=1.0000/255, alpha=1.0000/255
+epoch [1/10] batch [10/153] time 0.920 (1.235) data 0.000 (0.206) loss 7.9211 (7.8198) clean_loss 3.0710 (3.0769) adv_loss 4.8501 (4.7429) acc 28.1250 (36.4040) (mean 27.3343 many 39.4791 med 26.9046 few 13.6667) lr 1.0000e-02 eta 0:31:17
+epoch [1/10] batch [20/153] time 0.926 (1.079) data 0.000 (0.103) loss 7.5877 (7.6754) clean_loss 2.9184 (2.9925) adv_loss 4.6694 (4.6830) acc 37.5000 (38.2013) (mean 31.1412 many 41.6401 med 31.6776 few 18.2667) lr 1.0000e-02 eta 0:27:08
+epoch [1/10] batch [30/153] time 0.926 (1.029) data 0.000 (0.069) loss 7.6296 (7.7188) clean_loss 2.9489 (2.9878) adv_loss 4.6807 (4.7310) acc 40.6250 (36.2086) (mean 30.0475 many 39.0453 med 30.2480 few 19.3163) lr 1.0000e-02 eta 0:25:42
+epoch [1/10] batch [40/153] time 0.931 (1.003) data 0.000 (0.052) loss 7.6471 (7.6223) clean_loss 2.8178 (2.8966) adv_loss 4.8293 (4.7257) acc 37.5000 (35.1530) (mean 29.7819 many 37.2006 med 29.4111 few 21.5593) lr 1.0000e-02 eta 0:24:54
+epoch [1/10] batch [50/153] time 0.926 (0.987) data 0.000 (0.041) loss 7.2951 (7.4574) clean_loss 2.6885 (2.7710) adv_loss 4.6066 (4.6864) acc 34.3750 (38.7193) (mean 31.5040 many 39.9248 med 30.0749 few 23.3470) lr 1.0000e-02 eta 0:24:21
+epoch [1/10] batch [60/153] time 0.928 (0.978) data 0.000 (0.035) loss 7.8048 (7.4331) clean_loss 2.8436 (2.7278) adv_loss 4.9612 (4.7053) acc 35.9375 (39.2356) (mean 31.8871 many 39.3083 med 32.0514 few 23.0374) lr 1.0000e-02 eta 0:23:57
+epoch [1/10] batch [70/153] time 0.932 (0.971) data 0.000 (0.030) loss 7.2314 (7.2778) clean_loss 2.6445 (2.6319) adv_loss 4.5869 (4.6459) acc 37.5000 (41.1125) (mean 31.8806 many 39.3723 med 32.8317 few 22.0306) lr 1.0000e-02 eta 0:23:38
+epoch [1/10] batch [80/153] time 0.933 (0.967) data 0.000 (0.026) loss 6.7278 (7.2165) clean_loss 2.2758 (2.5959) adv_loss 4.4519 (4.6206) acc 46.8750 (41.4125) (mean 32.5605 many 42.6002 med 31.7664 few 21.7740) lr 1.0000e-02 eta 0:23:21
+epoch [1/10] batch [90/153] time 0.933 (0.963) data 0.000 (0.023) loss 7.2829 (7.2542) clean_loss 2.6890 (2.6141) adv_loss 4.5939 (4.6401) acc 40.6250 (42.0290) (mean 34.1041 many 43.9146 med 32.0001 few 25.1132) lr 1.0000e-02 eta 0:23:06
+epoch [1/10] batch [100/153] time 0.932 (0.960) data 0.000 (0.021) loss 6.8224 (7.2184) clean_loss 2.3008 (2.5637) adv_loss 4.5216 (4.6547) acc 50.0000 (41.1489) (mean 33.8004 many 42.7740 med 33.7172 few 23.4282) lr 1.0000e-02 eta 0:22:52
+epoch [1/10] batch [110/153] time 0.935 (0.958) data 0.000 (0.019) loss 7.1049 (7.2916) clean_loss 2.5652 (2.5999) adv_loss 4.5397 (4.6917) acc 35.9375 (40.3810) (mean 32.6671 many 39.5965 med 34.7187 few 22.1891) lr 1.0000e-02 eta 0:22:39
+epoch [1/10] batch [120/153] time 0.941 (0.956) data 0.000 (0.017) loss 7.7569 (7.2226) clean_loss 2.8286 (2.5590) adv_loss 4.9283 (4.6636) acc 37.5000 (41.1583) (mean 33.0421 many 40.5855 med 34.8598 few 22.1208) lr 1.0000e-02 eta 0:22:27
+epoch [1/10] batch [130/153] time 0.935 (0.954) data 0.000 (0.016) loss 7.2458 (7.1647) clean_loss 2.5326 (2.5268) adv_loss 4.7132 (4.6379) acc 46.8750 (43.5236) (mean 34.3675 many 44.9609 med 34.2865 few 22.1030) lr 1.0000e-02 eta 0:22:16
+epoch [1/10] batch [140/153] time 0.943 (0.953) data 0.000 (0.015) loss 6.8908 (7.2357) clean_loss 2.3750 (2.5548) adv_loss 4.5159 (4.6809) acc 35.9375 (39.6380) (mean 32.6355 many 39.9084 med 35.0445 few 21.3398) lr 1.0000e-02 eta 0:22:04
+epoch [1/10] batch [150/153] time 0.938 (0.952) data 0.000 (0.014) loss 7.3366 (7.1774) clean_loss 2.5681 (2.5173) adv_loss 4.7685 (4.6601) acc 40.6250 (40.5339) (mean 32.9410 many 42.3863 med 33.6433 few 21.1021) lr 1.0000e-02 eta 0:21:54
+Epoch [1/10] val_clean=70.5398 val_robust=4.8490 best_clean=70.5398 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+Saved best robust checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_robust.pth.tar
+epoch [2/10] batch [10/153] time 0.939 (0.954) data 0.000 (0.019) loss 7.1538 (7.1004) clean_loss 2.4293 (2.4466) adv_loss 4.7245 (4.6538) acc 39.0625 (44.2783) (mean 34.3492 many 46.5299 med 34.0575 few 20.4787) lr 9.7553e-03 eta 0:21:43
+epoch [2/10] batch [20/153] time 0.939 (0.953) data 0.000 (0.018) loss 7.3198 (7.1070) clean_loss 2.5852 (2.4271) adv_loss 4.7346 (4.6799) acc 42.1875 (45.6285) (mean 35.6661 many 50.1384 med 34.7009 few 19.9078) lr 9.7553e-03 eta 0:21:33
+epoch [2/10] batch [30/153] time 0.941 (0.952) data 0.000 (0.017) loss 7.2644 (7.0261) clean_loss 2.6274 (2.4072) adv_loss 4.6370 (4.6188) acc 34.3750 (43.1910) (mean 34.1315 many 44.2084 med 35.5832 few 20.6814) lr 9.7553e-03 eta 0:21:22
+epoch [2/10] batch [40/153] time 0.941 (0.952) data 0.000 (0.016) loss 7.0640 (7.0590) clean_loss 2.5261 (2.4391) adv_loss 4.5380 (4.6198) acc 29.6875 (41.1166) (mean 33.4204 many 41.8649 med 35.6046 few 21.0203) lr 9.7553e-03 eta 0:21:12
+epoch [2/10] batch [50/153] time 0.947 (0.951) data 0.000 (0.015) loss 6.7280 (7.0693) clean_loss 2.3103 (2.4411) adv_loss 4.4177 (4.6282) acc 39.0625 (41.7753) (mean 34.2476 many 43.7909 med 36.8087 few 20.1260) lr 9.7553e-03 eta 0:21:02
+epoch [2/10] batch [60/153] time 0.941 (0.951) data 0.000 (0.015) loss 7.4737 (7.0546) clean_loss 2.5876 (2.4216) adv_loss 4.8861 (4.6330) acc 40.6250 (42.2300) (mean 34.8547 many 45.3382 med 37.5260 few 19.5074) lr 9.7553e-03 eta 0:20:52
+epoch [2/10] batch [70/153] time 0.941 (0.951) data 0.000 (0.014) loss 6.9727 (6.9638) clean_loss 2.2214 (2.3372) adv_loss 4.7513 (4.6266) acc 48.4375 (43.9330) (mean 35.7159 many 46.2849 med 38.8556 few 19.7223) lr 9.7553e-03 eta 0:20:42
+epoch [2/10] batch [80/153] time 0.950 (0.950) data 0.000 (0.013) loss 6.7161 (6.8662) clean_loss 2.1936 (2.3043) adv_loss 4.5225 (4.5618) acc 43.7500 (46.2857) (mean 36.5920 many 49.0468 med 38.4326 few 19.9141) lr 9.7553e-03 eta 0:20:32
+epoch [2/10] batch [90/153] time 0.944 (0.950) data 0.000 (0.013) loss 6.8883 (6.8008) clean_loss 2.3601 (2.2924) adv_loss 4.5282 (4.5085) acc 45.3125 (45.5779) (mean 35.7733 many 45.6505 med 39.6196 few 19.7624) lr 9.7553e-03 eta 0:20:22
+epoch [2/10] batch [100/153] time 0.947 (0.950) data 0.000 (0.012) loss 7.1638 (6.8535) clean_loss 2.5162 (2.2824) adv_loss 4.6475 (4.5711) acc 42.1875 (47.6294) (mean 37.2191 many 50.1288 med 40.6859 few 18.1132) lr 9.7553e-03 eta 0:20:13
+epoch [2/10] batch [110/153] time 0.947 (0.950) data 0.000 (0.012) loss 6.9514 (6.9582) clean_loss 2.4477 (2.3521) adv_loss 4.5038 (4.6061) acc 42.1875 (47.6808) (mean 37.0242 many 47.8901 med 42.2755 few 18.2207) lr 9.7553e-03 eta 0:20:03
+epoch [2/10] batch [120/153] time 0.946 (0.950) data 0.000 (0.011) loss 6.6790 (6.9537) clean_loss 2.2078 (2.3553) adv_loss 4.4712 (4.5984) acc 39.0625 (43.9422) (mean 36.0248 many 43.6329 med 42.8316 few 19.2073) lr 9.7553e-03 eta 0:19:53
+epoch [2/10] batch [130/153] time 0.952 (0.950) data 0.000 (0.011) loss 6.9915 (7.0059) clean_loss 2.3998 (2.3706) adv_loss 4.5917 (4.6353) acc 48.4375 (43.5875) (mean 35.8815 many 43.4475 med 43.3232 few 18.3725) lr 9.7553e-03 eta 0:19:44
+epoch [2/10] batch [140/153] time 0.948 (0.950) data 0.000 (0.011) loss 7.0183 (7.0537) clean_loss 2.3279 (2.3938) adv_loss 4.6904 (4.6599) acc 48.4375 (44.5870) (mean 36.3914 many 45.0138 med 42.7927 few 18.8637) lr 9.7553e-03 eta 0:19:34
+epoch [2/10] batch [150/153] time 0.947 (0.950) data 0.000 (0.010) loss 7.4298 (6.9471) clean_loss 2.4683 (2.3193) adv_loss 4.9615 (4.6279) acc 42.1875 (47.3440) (mean 37.9589 many 48.7282 med 43.9191 few 18.4413) lr 9.7553e-03 eta 0:19:25
+Epoch [2/10] val_clean=70.6313 val_robust=4.3001 best_clean=70.6313 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+epoch [3/10] batch [10/153] time 0.955 (0.951) data 0.000 (0.013) loss 7.0574 (6.8518) clean_loss 2.3908 (2.2857) adv_loss 4.6666 (4.5662) acc 40.6250 (47.5872) (mean 37.5569 many 47.2693 med 44.2431 few 18.4252) lr 9.0451e-03 eta 0:19:14
+epoch [3/10] batch [20/153] time 0.950 (0.951) data 0.000 (0.013) loss 7.1089 (6.9176) clean_loss 2.3587 (2.3201) adv_loss 4.7502 (4.5975) acc 45.3125 (45.1220) (mean 36.8345 many 43.6799 med 46.0139 few 18.1389) lr 9.0451e-03 eta 0:19:05
+epoch [3/10] batch [30/153] time 0.957 (0.951) data 0.000 (0.012) loss 6.6400 (6.8999) clean_loss 2.2067 (2.3215) adv_loss 4.4333 (4.5784) acc 45.3125 (42.8520) (mean 35.5190 many 41.6389 med 44.3836 few 18.0370) lr 9.0451e-03 eta 0:18:55
+epoch [3/10] batch [40/153] time 0.952 (0.951) data 0.000 (0.012) loss 6.6869 (6.7018) clean_loss 2.2231 (2.2126) adv_loss 4.4638 (4.4892) acc 45.3125 (45.6932) (mean 37.2552 many 46.2697 med 44.9767 few 17.7300) lr 9.0451e-03 eta 0:18:46
+epoch [3/10] batch [50/153] time 0.957 (0.951) data 0.000 (0.011) loss 7.0438 (6.6911) clean_loss 2.3910 (2.2173) adv_loss 4.6528 (4.4738) acc 43.7500 (47.2162) (mean 37.4682 many 48.2020 med 43.4758 few 17.9363) lr 9.0451e-03 eta 0:18:36
+epoch [3/10] batch [60/153] time 0.953 (0.951) data 0.000 (0.011) loss 6.5801 (6.9007) clean_loss 2.1395 (2.3064) adv_loss 4.4406 (4.5944) acc 48.4375 (47.4385) (mean 38.0303 many 49.2101 med 43.5227 few 18.5795) lr 9.0451e-03 eta 0:18:27
+epoch [3/10] batch [70/153] time 0.954 (0.952) data 0.000 (0.011) loss 6.5724 (6.8706) clean_loss 2.1319 (2.3010) adv_loss 4.4405 (4.5696) acc 48.4375 (46.1787) (mean 37.0815 many 45.6266 med 43.7700 few 19.3089) lr 9.0451e-03 eta 0:18:18
+epoch [3/10] batch [80/153] time 0.954 (0.952) data 0.000 (0.011) loss 6.4563 (6.8924) clean_loss 2.1026 (2.3064) adv_loss 4.3538 (4.5860) acc 48.4375 (43.6523) (mean 36.5813 many 43.6305 med 44.0334 few 19.6633) lr 9.0451e-03 eta 0:18:08
+epoch [3/10] batch [90/153] time 0.955 (0.952) data 0.000 (0.010) loss 6.7035 (6.8397) clean_loss 2.1098 (2.2536) adv_loss 4.5938 (4.5861) acc 56.2500 (46.0994) (mean 37.8674 many 46.2460 med 45.4643 few 19.2293) lr 9.0451e-03 eta 0:17:59
+epoch [3/10] batch [100/153] time 0.959 (0.952) data 0.000 (0.010) loss 7.1955 (6.7874) clean_loss 2.4200 (2.2264) adv_loss 4.7755 (4.5609) acc 40.6250 (45.4356) (mean 38.1078 many 46.4165 med 45.5708 few 19.7074) lr 9.0451e-03 eta 0:17:49
+epoch [3/10] batch [110/153] time 0.954 (0.952) data 0.000 (0.010) loss 7.0091 (6.7848) clean_loss 2.4991 (2.2632) adv_loss 4.5100 (4.5216) acc 43.7500 (46.7137) (mean 38.6445 many 48.0618 med 45.5874 few 19.5577) lr 9.0451e-03 eta 0:17:40
+epoch [3/10] batch [120/153] time 0.956 (0.952) data 0.000 (0.010) loss 6.3663 (6.8052) clean_loss 2.0215 (2.2789) adv_loss 4.3448 (4.5263) acc 51.5625 (45.8489) (mean 38.0300 many 45.6457 med 45.3005 few 20.6627) lr 9.0451e-03 eta 0:17:31
+epoch [3/10] batch [130/153] time 0.957 (0.952) data 0.000 (0.009) loss 7.3096 (6.8200) clean_loss 2.5440 (2.2631) adv_loss 4.7656 (4.5569) acc 39.0625 (46.7235) (mean 38.8880 many 48.9625 med 43.5140 few 21.7375) lr 9.0451e-03 eta 0:17:21
+epoch [3/10] batch [140/153] time 0.957 (0.952) data 0.000 (0.009) loss 7.1906 (6.8524) clean_loss 2.4618 (2.2898) adv_loss 4.7288 (4.5626) acc 46.8750 (44.7454) (mean 38.5068 many 47.4567 med 43.5226 few 22.2136) lr 9.0451e-03 eta 0:17:12
+epoch [3/10] batch [150/153] time 0.965 (0.952) data 0.000 (0.009) loss 6.9481 (6.8603) clean_loss 2.4158 (2.2990) adv_loss 4.5324 (4.5613) acc 57.8125 (46.1588) (mean 38.2522 many 47.0221 med 43.5705 few 21.8161) lr 9.0451e-03 eta 0:17:02
+Epoch [3/10] val_clean=70.5398 val_robust=3.8426 best_clean=70.6313 best_robust=4.8490
+epoch [4/10] batch [10/153] time 0.964 (0.953) data 0.000 (0.011) loss 7.1796 (6.8995) clean_loss 2.3637 (2.2907) adv_loss 4.8160 (4.6089) acc 45.3125 (47.2242) (mean 38.9608 many 47.4130 med 45.9921 few 20.8965) lr 7.9389e-03 eta 0:16:51
+epoch [4/10] batch [20/153] time 0.958 (0.954) data 0.000 (0.011) loss 7.2829 (6.8550) clean_loss 2.4519 (2.2566) adv_loss 4.8310 (4.5983) acc 48.4375 (46.8311) (mean 39.9759 many 47.6860 med 48.4685 few 21.0725) lr 7.9389e-03 eta 0:16:42
+epoch [4/10] batch [30/153] time 0.964 (0.954) data 0.000 (0.010) loss 6.7385 (6.7113) clean_loss 2.1864 (2.1924) adv_loss 4.5521 (4.5189) acc 53.1250 (48.8273) (mean 41.0291 many 50.5092 med 48.0101 few 21.8246) lr 7.9389e-03 eta 0:16:32
+epoch [4/10] batch [40/153] time 0.960 (0.954) data 0.000 (0.010) loss 6.9296 (6.7201) clean_loss 2.3883 (2.1959) adv_loss 4.5413 (4.5243) acc 48.4375 (49.9866) (mean 41.3966 many 50.3806 med 48.4026 few 22.7415) lr 7.9389e-03 eta 0:16:23
+epoch [4/10] batch [50/153] time 0.965 (0.954) data 0.000 (0.010) loss 6.4992 (6.7326) clean_loss 2.0683 (2.1931) adv_loss 4.4309 (4.5395) acc 50.0000 (47.9615) (mean 40.3478 many 47.7572 med 47.9056 few 22.8861) lr 7.9389e-03 eta 0:16:14
+epoch [4/10] batch [60/153] time 0.965 (0.954) data 0.000 (0.010) loss 6.5618 (6.8418) clean_loss 2.1985 (2.2584) adv_loss 4.3633 (4.5834) acc 46.8750 (46.0862) (mean 39.5022 many 46.3543 med 47.4785 few 22.2025) lr 7.9389e-03 eta 0:16:04
+epoch [4/10] batch [70/153] time 0.959 (0.954) data 0.000 (0.010) loss 6.6414 (6.7644) clean_loss 2.1292 (2.1982) adv_loss 4.5122 (4.5662) acc 56.2500 (49.8420) (mean 42.1290 many 52.2565 med 48.5046 few 22.8754) lr 7.9389e-03 eta 0:15:55
+epoch [4/10] batch [80/153] time 0.959 (0.954) data 0.000 (0.009) loss 6.8356 (6.7908) clean_loss 2.2587 (2.2307) adv_loss 4.5769 (4.5601) acc 43.7500 (48.2204) (mean 41.1661 many 48.8000 med 48.9099 few 23.2253) lr 7.9389e-03 eta 0:15:45
+epoch [4/10] batch [90/153] time 0.957 (0.954) data 0.000 (0.009) loss 6.6128 (6.7048) clean_loss 2.1145 (2.1756) adv_loss 4.4983 (4.5293) acc 46.8750 (48.6776) (mean 41.3592 many 49.6095 med 48.2156 few 23.7346) lr 7.9389e-03 eta 0:15:36
+epoch [4/10] batch [100/153] time 0.962 (0.955) data 0.000 (0.009) loss 7.3322 (6.7800) clean_loss 2.6049 (2.2234) adv_loss 4.7272 (4.5567) acc 42.1875 (49.7136) (mean 41.8885 many 50.6031 med 47.9300 few 24.6730) lr 7.9389e-03 eta 0:15:26
+epoch [4/10] batch [110/153] time 0.955 (0.955) data 0.000 (0.009) loss 6.6819 (6.7800) clean_loss 2.2774 (2.2139) adv_loss 4.4045 (4.5661) acc 40.6250 (49.4539) (mean 41.8190 many 50.6465 med 47.7172 few 24.6390) lr 7.9389e-03 eta 0:15:17
+epoch [4/10] batch [120/153] time 0.955 (0.955) data 0.000 (0.009) loss 6.0400 (6.6601) clean_loss 1.7826 (2.1664) adv_loss 4.2574 (4.4937) acc 60.9375 (50.0717) (mean 42.5536 many 50.6675 med 49.3098 few 25.2052) lr 7.9389e-03 eta 0:15:07
+epoch [4/10] batch [130/153] time 0.955 (0.955) data 0.000 (0.009) loss 6.8109 (6.6257) clean_loss 2.2864 (2.1567) adv_loss 4.5245 (4.4690) acc 45.3125 (48.8091) (mean 42.1565 many 48.4989 med 49.0095 few 26.7619) lr 7.9389e-03 eta 0:14:58
+epoch [4/10] batch [140/153] time 0.954 (0.955) data 0.000 (0.009) loss 6.1642 (6.6012) clean_loss 1.8293 (2.1137) adv_loss 4.3349 (4.4875) acc 56.2500 (50.9529) (mean 43.6480 many 49.7898 med 51.1419 few 27.7396) lr 7.9389e-03 eta 0:14:48
+epoch [4/10] batch [150/153] time 0.951 (0.955) data 0.000 (0.008) loss 6.9693 (6.7927) clean_loss 2.2940 (2.2247) adv_loss 4.6753 (4.5680) acc 51.5625 (48.3079) (mean 43.1901 many 48.6618 med 50.7442 few 27.9932) lr 7.9389e-03 eta 0:14:39
+Epoch [4/10] val_clean=69.5334 val_robust=3.8426 best_clean=70.6313 best_robust=4.8490
+epoch [5/10] batch [10/153] time 0.954 (0.955) data 0.000 (0.010) loss 6.9083 (6.8342) clean_loss 2.3578 (2.2598) adv_loss 4.5506 (4.5743) acc 43.7500 (45.6909) (mean 41.6676 many 47.3191 med 48.8112 few 26.7399) lr 6.5451e-03 eta 0:14:27
+epoch [5/10] batch [20/153] time 0.948 (0.955) data 0.000 (0.010) loss 6.5006 (6.7276) clean_loss 2.0523 (2.2037) adv_loss 4.4483 (4.5239) acc 54.6875 (49.0075) (mean 43.9047 many 51.3525 med 50.3332 few 27.7157) lr 6.5451e-03 eta 0:14:17
+epoch [5/10] batch [30/153] time 0.948 (0.955) data 0.000 (0.010) loss 6.5186 (6.6309) clean_loss 2.1268 (2.1462) adv_loss 4.3919 (4.4847) acc 54.6875 (49.0781) (mean 43.9781 many 49.8161 med 52.4537 few 27.2789) lr 6.5451e-03 eta 0:14:08
+epoch [5/10] batch [40/153] time 0.946 (0.955) data 0.000 (0.009) loss 6.2225 (6.5786) clean_loss 1.9714 (2.1135) adv_loss 4.2511 (4.4651) acc 56.2500 (51.9534) (mean 45.1387 many 52.9558 med 52.8754 few 26.9925) lr 6.5451e-03 eta 0:13:58
+epoch [5/10] batch [50/153] time 0.949 (0.955) data 0.000 (0.009) loss 6.5076 (6.6424) clean_loss 2.0185 (2.1308) adv_loss 4.4891 (4.5116) acc 50.0000 (50.4833) (mean 43.9301 many 50.9694 med 51.1204 few 27.3288) lr 6.5451e-03 eta 0:13:48
+epoch [5/10] batch [60/153] time 0.947 (0.955) data 0.000 (0.009) loss 6.4266 (6.6632) clean_loss 2.0601 (2.1488) adv_loss 4.3665 (4.5144) acc 56.2500 (50.7061) (mean 44.1195 many 49.9974 med 52.4182 few 27.5803) lr 6.5451e-03 eta 0:13:39
+epoch [5/10] batch [70/153] time 0.946 (0.955) data 0.000 (0.009) loss 6.7148 (6.7899) clean_loss 2.1663 (2.2129) adv_loss 4.5485 (4.5770) acc 43.7500 (48.7736) (mean 44.3344 many 50.2271 med 52.2498 few 28.2251) lr 6.5451e-03 eta 0:13:29
+epoch [5/10] batch [80/153] time 0.951 (0.955) data 0.000 (0.009) loss 6.5547 (6.6374) clean_loss 2.0681 (2.1326) adv_loss 4.4866 (4.5048) acc 46.8750 (46.0682) (mean 43.1174 many 48.4696 med 50.6574 few 28.0765) lr 6.5451e-03 eta 0:13:19
+epoch [5/10] batch [90/153] time 0.945 (0.955) data 0.000 (0.009) loss 6.8760 (6.7517) clean_loss 2.2861 (2.1786) adv_loss 4.5900 (4.5732) acc 39.0625 (46.2272) (mean 43.1444 many 48.7691 med 50.3973 few 28.1207) lr 6.5451e-03 eta 0:13:10
+epoch [5/10] batch [100/153] time 0.950 (0.954) data 0.000 (0.009) loss 6.7126 (6.6903) clean_loss 2.1940 (2.1727) adv_loss 4.5186 (4.5175) acc 40.6250 (45.6103) (mean 43.1536 many 47.4984 med 51.8788 few 27.9052) lr 6.5451e-03 eta 0:13:00
+epoch [5/10] batch [110/153] time 0.944 (0.954) data 0.000 (0.008) loss 6.5768 (6.6571) clean_loss 2.1198 (2.1570) adv_loss 4.4570 (4.5001) acc 53.1250 (49.0816) (mean 44.3394 many 50.8519 med 51.2237 few 28.7096) lr 6.5451e-03 eta 0:12:51
+epoch [5/10] batch [120/153] time 0.946 (0.954) data 0.000 (0.008) loss 6.4167 (6.6682) clean_loss 2.1468 (2.1711) adv_loss 4.2699 (4.4971) acc 45.3125 (48.8236) (mean 43.8628 many 50.0257 med 50.1409 few 29.3482) lr 6.5451e-03 eta 0:12:41
+epoch [5/10] batch [130/153] time 0.944 (0.954) data 0.000 (0.008) loss 6.5831 (6.7121) clean_loss 1.9883 (2.1727) adv_loss 4.5948 (4.5394) acc 57.8125 (51.5116) (mean 45.3731 many 52.6287 med 51.5761 few 29.6713) lr 6.5451e-03 eta 0:12:31
+epoch [5/10] batch [140/153] time 0.943 (0.954) data 0.000 (0.008) loss 7.1663 (6.6714) clean_loss 2.4806 (2.1691) adv_loss 4.6857 (4.5023) acc 42.1875 (48.4611) (mean 43.2874 many 47.3153 med 51.1302 few 29.4382) lr 6.5451e-03 eta 0:12:22
+epoch [5/10] batch [150/153] time 0.945 (0.954) data 0.000 (0.008) loss 6.6601 (6.7237) clean_loss 2.1223 (2.1794) adv_loss 4.5378 (4.5443) acc 50.0000 (49.7474) (mean 44.5310 many 48.6650 med 52.9367 few 29.9013) lr 6.5451e-03 eta 0:12:12
+Epoch [5/10] val_clean=69.7164 val_robust=4.2086 best_clean=70.6313 best_robust=4.8490
+epoch [6/10] batch [10/153] time 0.941 (0.954) data 0.000 (0.009) loss 6.7483 (6.5506) clean_loss 2.1959 (2.0975) adv_loss 4.5524 (4.4531) acc 45.3125 (50.9621) (mean 45.5037 many 49.8739 med 54.1493 few 30.3188) lr 5.0000e-03 eta 0:12:00
+epoch [6/10] batch [20/153] time 0.941 (0.954) data 0.000 (0.009) loss 6.5584 (6.6831) clean_loss 1.9914 (2.1655) adv_loss 4.5669 (4.5176) acc 51.5625 (49.4275) (mean 44.5975 many 49.3007 med 51.6198 few 30.9178) lr 5.0000e-03 eta 0:11:50
+epoch [6/10] batch [30/153] time 0.941 (0.954) data 0.000 (0.009) loss 7.0146 (6.7467) clean_loss 2.3122 (2.1981) adv_loss 4.7024 (4.5486) acc 45.3125 (50.9780) (mean 45.8360 many 51.6124 med 51.7477 few 32.2001) lr 5.0000e-03 eta 0:11:41
+epoch [6/10] batch [40/153] time 0.941 (0.954) data 0.000 (0.009) loss 6.7638 (6.7077) clean_loss 2.2438 (2.1759) adv_loss 4.5200 (4.5318) acc 46.8750 (49.1995) (mean 44.7164 many 48.2452 med 52.1044 few 31.9803) lr 5.0000e-03 eta 0:11:31
+epoch [6/10] batch [50/153] time 0.941 (0.954) data 0.000 (0.009) loss 6.2306 (6.5787) clean_loss 1.8433 (2.0710) adv_loss 4.3873 (4.5077) acc 60.9375 (52.9312) (mean 47.1238 many 52.0706 med 54.6472 few 32.5751) lr 5.0000e-03 eta 0:11:21
+epoch [6/10] batch [60/153] time 0.941 (0.954) data 0.000 (0.009) loss 6.4127 (6.5674) clean_loss 2.0134 (2.1011) adv_loss 4.3993 (4.4663) acc 43.7500 (49.5474) (mean 45.8786 many 48.4053 med 54.6931 few 32.6470) lr 5.0000e-03 eta 0:11:12
+epoch [6/10] batch [70/153] time 0.940 (0.953) data 0.000 (0.009) loss 6.4077 (6.5501) clean_loss 1.9752 (2.0960) adv_loss 4.4325 (4.4542) acc 59.3750 (50.5476) (mean 46.5063 many 50.4432 med 55.1940 few 31.7775) lr 5.0000e-03 eta 0:11:02
+epoch [6/10] batch [80/153] time 0.944 (0.953) data 0.000 (0.009) loss 6.5640 (6.6449) clean_loss 2.0703 (2.1472) adv_loss 4.4937 (4.4976) acc 50.0000 (49.0216) (mean 45.8932 many 49.4311 med 55.0287 few 31.1075) lr 5.0000e-03 eta 0:10:52
+epoch [6/10] batch [90/153] time 0.940 (0.953) data 0.000 (0.008) loss 6.5084 (6.7191) clean_loss 2.0849 (2.1896) adv_loss 4.4234 (4.5295) acc 50.0000 (48.7787) (mean 45.2970 many 49.0007 med 53.8135 few 31.0401) lr 5.0000e-03 eta 0:10:43
+epoch [6/10] batch [100/153] time 0.942 (0.953) data 0.000 (0.008) loss 6.4270 (6.5932) clean_loss 2.0699 (2.1275) adv_loss 4.3571 (4.4657) acc 57.8125 (51.0945) (mean 47.4147 many 52.9392 med 55.5365 few 31.4941) lr 5.0000e-03 eta 0:10:33
+epoch [6/10] batch [110/153] time 0.940 (0.953) data 0.000 (0.008) loss 6.2789 (6.6735) clean_loss 1.9317 (2.1651) adv_loss 4.3472 (4.5084) acc 60.9375 (51.5134) (mean 47.3436 many 52.6270 med 54.7253 few 32.5677) lr 5.0000e-03 eta 0:10:24
+epoch [6/10] batch [120/153] time 0.939 (0.953) data 0.000 (0.008) loss 6.5064 (6.6056) clean_loss 2.1965 (2.1338) adv_loss 4.3099 (4.4717) acc 46.8750 (50.6023) (mean 46.3301 many 50.7894 med 53.3689 few 32.9159) lr 5.0000e-03 eta 0:10:14
+epoch [6/10] batch [130/153] time 0.942 (0.953) data 0.000 (0.008) loss 6.8360 (6.6225) clean_loss 2.2881 (2.1297) adv_loss 4.5479 (4.4928) acc 37.5000 (49.6003) (mean 45.6982 many 51.1699 med 50.8000 few 33.3625) lr 5.0000e-03 eta 0:10:04
+epoch [6/10] batch [140/153] time 0.940 (0.952) data 0.000 (0.008) loss 6.5295 (6.6884) clean_loss 2.1447 (2.1801) adv_loss 4.3848 (4.5084) acc 45.3125 (48.3361) (mean 45.1408 many 48.3473 med 52.0567 few 33.3312) lr 5.0000e-03 eta 0:09:55
+epoch [6/10] batch [150/153] time 0.941 (0.952) data 0.000 (0.008) loss 6.2669 (6.6458) clean_loss 1.9125 (2.1479) adv_loss 4.3545 (4.4979) acc 68.7500 (51.4328) (mean 46.7568 many 51.4326 med 53.1328 few 33.8630) lr 5.0000e-03 eta 0:09:45
+Epoch [6/10] val_clean=70.3568 val_robust=3.5682 best_clean=70.6313 best_robust=4.8490
+epoch [7/10] batch [10/153] time 0.940 (0.953) data 0.000 (0.009) loss 6.9611 (6.7107) clean_loss 2.2445 (2.1586) adv_loss 4.7166 (4.5522) acc 48.4375 (50.5849) (mean 47.0880 many 50.3347 med 55.1122 few 33.9386) lr 3.4549e-03 eta 0:09:33
+epoch [7/10] batch [20/153] time 0.940 (0.953) data 0.000 (0.009) loss 6.7277 (6.5523) clean_loss 2.1895 (2.0820) adv_loss 4.5382 (4.4703) acc 54.6875 (51.2357) (mean 47.8883 many 51.3450 med 55.8926 few 34.5171) lr 3.4549e-03 eta 0:09:23
+epoch [7/10] batch [30/153] time 0.946 (0.953) data 0.000 (0.009) loss 6.3421 (6.6209) clean_loss 2.0078 (2.1414) adv_loss 4.3343 (4.4795) acc 51.5625 (47.9626) (mean 46.5009 many 48.0671 med 55.1851 few 34.5420) lr 3.4549e-03 eta 0:09:14
+epoch [7/10] batch [40/153] time 0.939 (0.952) data 0.000 (0.009) loss 6.9728 (6.6615) clean_loss 2.3048 (2.1526) adv_loss 4.6681 (4.5089) acc 46.8750 (48.8915) (mean 46.8396 many 49.7833 med 54.5630 few 34.3948) lr 3.4549e-03 eta 0:09:04
+epoch [7/10] batch [50/153] time 0.945 (0.952) data 0.000 (0.009) loss 6.9555 (6.7642) clean_loss 2.2670 (2.1865) adv_loss 4.6885 (4.5778) acc 43.7500 (50.3905) (mean 47.3841 many 50.9175 med 54.9885 few 34.3901) lr 3.4549e-03 eta 0:08:55
+epoch [7/10] batch [60/153] time 0.946 (0.952) data 0.000 (0.008) loss 6.8441 (6.6061) clean_loss 2.2219 (2.1297) adv_loss 4.6222 (4.4765) acc 51.5625 (50.1711) (mean 46.6427 many 49.5873 med 54.5175 few 34.0202) lr 3.4549e-03 eta 0:08:45
+epoch [7/10] batch [70/153] time 0.939 (0.952) data 0.000 (0.008) loss 6.8291 (6.5609) clean_loss 2.2994 (2.1246) adv_loss 4.5297 (4.4363) acc 51.5625 (50.0073) (mean 46.3476 many 50.4652 med 53.1118 few 33.6522) lr 3.4549e-03 eta 0:08:36
+epoch [7/10] batch [80/153] time 0.940 (0.952) data 0.000 (0.008) loss 6.5274 (6.5061) clean_loss 2.0655 (2.0826) adv_loss 4.4618 (4.4234) acc 51.5625 (50.8644) (mean 46.7886 many 50.6554 med 53.7725 few 34.1294) lr 3.4549e-03 eta 0:08:26
+epoch [7/10] batch [90/153] time 0.940 (0.952) data 0.000 (0.008) loss 6.7524 (6.4707) clean_loss 2.1961 (2.0474) adv_loss 4.5564 (4.4233) acc 53.1250 (53.8744) (mean 48.4503 many 55.0075 med 54.0638 few 34.2512) lr 3.4549e-03 eta 0:08:16
+epoch [7/10] batch [100/153] time 0.946 (0.952) data 0.000 (0.008) loss 6.6653 (6.5264) clean_loss 2.1377 (2.0716) adv_loss 4.5276 (4.4548) acc 54.6875 (54.2456) (mean 48.3791 many 54.3352 med 53.4264 few 35.5418) lr 3.4549e-03 eta 0:08:07
+epoch [7/10] batch [110/153] time 0.940 (0.952) data 0.000 (0.008) loss 6.8667 (6.6196) clean_loss 2.3086 (2.1150) adv_loss 4.5581 (4.5046) acc 51.5625 (54.5398) (mean 48.8024 many 54.8955 med 53.9777 few 35.6560) lr 3.4549e-03 eta 0:07:57
+epoch [7/10] batch [120/153] time 0.940 (0.952) data 0.000 (0.008) loss 6.8893 (6.6391) clean_loss 2.3096 (2.1258) adv_loss 4.5797 (4.5133) acc 45.3125 (52.6343) (mean 48.6680 many 52.9099 med 54.3447 few 37.0964) lr 3.4549e-03 eta 0:07:48
+epoch [7/10] batch [130/153] time 0.947 (0.951) data 0.000 (0.008) loss 6.3198 (6.5474) clean_loss 1.9714 (2.0997) adv_loss 4.3484 (4.4478) acc 48.4375 (51.3220) (mean 47.6045 many 52.0633 med 52.8871 few 36.2397) lr 3.4549e-03 eta 0:07:38
+epoch [7/10] batch [140/153] time 0.940 (0.951) data 0.000 (0.008) loss 6.3976 (6.6313) clean_loss 2.0811 (2.1533) adv_loss 4.3165 (4.4780) acc 43.7500 (48.4434) (mean 46.0223 many 49.4058 med 51.0114 few 36.2542) lr 3.4549e-03 eta 0:07:29
+epoch [7/10] batch [150/153] time 0.940 (0.951) data 0.000 (0.008) loss 6.6375 (6.6079) clean_loss 2.1746 (2.1316) adv_loss 4.4629 (4.4763) acc 42.1875 (48.5613) (mean 46.0622 many 49.7898 med 50.7340 few 36.2630) lr 3.4549e-03 eta 0:07:19
+Epoch [7/10] val_clean=71.8207 val_robust=4.2086 best_clean=71.8207 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+epoch [8/10] batch [10/153] time 0.940 (0.952) data 0.000 (0.009) loss 6.9102 (6.5857) clean_loss 2.3708 (2.1345) adv_loss 4.5394 (4.4512) acc 40.6250 (49.4456) (mean 47.0983 many 50.1779 med 52.5173 few 37.1834) lr 2.0611e-03 eta 0:07:07
+epoch [8/10] batch [20/153] time 0.940 (0.952) data 0.000 (0.009) loss 6.5567 (6.6166) clean_loss 2.0844 (2.1259) adv_loss 4.4723 (4.4906) acc 53.1250 (51.6571) (mean 48.9541 many 53.7063 med 53.8456 few 37.7030) lr 2.0611e-03 eta 0:06:57
+epoch [8/10] batch [30/153] time 0.941 (0.951) data 0.000 (0.008) loss 6.5381 (6.5014) clean_loss 2.1138 (2.0511) adv_loss 4.4243 (4.4503) acc 50.0000 (54.6532) (mean 50.6983 many 56.2932 med 56.1692 few 37.7882) lr 2.0611e-03 eta 0:06:48
+epoch [8/10] batch [40/153] time 0.939 (0.951) data 0.000 (0.008) loss 6.6341 (6.4374) clean_loss 2.0970 (2.0210) adv_loss 4.5371 (4.4164) acc 53.1250 (53.8444) (mean 49.4639 many 52.6181 med 56.5452 few 37.5226) lr 2.0611e-03 eta 0:06:38
+epoch [8/10] batch [50/153] time 0.947 (0.951) data 0.000 (0.008) loss 6.3740 (6.5341) clean_loss 2.0062 (2.0787) adv_loss 4.3678 (4.4554) acc 51.5625 (52.1297) (mean 49.2791 many 53.4601 med 55.8701 few 36.7116) lr 2.0611e-03 eta 0:06:29
+epoch [8/10] batch [60/153] time 0.946 (0.951) data 0.000 (0.008) loss 6.3438 (6.4594) clean_loss 1.8980 (2.0203) adv_loss 4.4457 (4.4391) acc 60.9375 (55.9107) (mean 51.6580 many 55.8861 med 60.2588 few 36.6911) lr 2.0611e-03 eta 0:06:19
+epoch [8/10] batch [70/153] time 0.940 (0.951) data 0.000 (0.008) loss 6.0637 (6.5549) clean_loss 1.8142 (2.0854) adv_loss 4.2495 (4.4694) acc 62.5000 (52.1808) (mean 49.8101 many 54.2245 med 57.0348 few 36.2313) lr 2.0611e-03 eta 0:06:09
+epoch [8/10] batch [80/153] time 0.948 (0.951) data 0.000 (0.008) loss 6.8251 (6.5883) clean_loss 2.1872 (2.0990) adv_loss 4.6379 (4.4893) acc 56.2500 (51.1876) (mean 48.7627 many 52.0145 med 56.8162 few 35.5731) lr 2.0611e-03 eta 0:06:00
+epoch [8/10] batch [90/153] time 0.941 (0.951) data 0.000 (0.008) loss 6.2773 (6.5279) clean_loss 2.0025 (2.0981) adv_loss 4.2748 (4.4298) acc 60.9375 (52.3926) (mean 49.6590 many 55.3649 med 56.7632 few 34.7138) lr 2.0611e-03 eta 0:05:50
+epoch [8/10] batch [100/153] time 0.947 (0.951) data 0.000 (0.008) loss 6.9629 (6.5722) clean_loss 2.3435 (2.1164) adv_loss 4.6194 (4.4558) acc 43.7500 (51.4954) (mean 48.7909 many 54.2269 med 55.2868 few 34.8703) lr 2.0611e-03 eta 0:05:41
+epoch [8/10] batch [110/153] time 0.941 (0.951) data 0.000 (0.008) loss 6.7855 (6.6362) clean_loss 2.1654 (2.1340) adv_loss 4.6201 (4.5022) acc 53.1250 (52.9101) (mean 48.8294 many 53.4529 med 56.1832 few 34.8559) lr 2.0611e-03 eta 0:05:31
+epoch [8/10] batch [120/153] time 0.942 (0.951) data 0.000 (0.008) loss 6.6930 (6.6227) clean_loss 2.1468 (2.1275) adv_loss 4.5461 (4.4952) acc 50.0000 (51.2336) (mean 47.6201 many 50.9486 med 55.0889 few 35.0231) lr 2.0611e-03 eta 0:05:22
+epoch [8/10] batch [130/153] time 0.944 (0.951) data 0.000 (0.008) loss 6.5624 (6.6355) clean_loss 2.1040 (2.1289) adv_loss 4.4583 (4.5066) acc 54.6875 (52.4466) (mean 48.3597 many 51.6173 med 56.1428 few 35.4789) lr 2.0611e-03 eta 0:05:12
+epoch [8/10] batch [140/153] time 0.944 (0.951) data 0.000 (0.008) loss 6.7812 (6.5093) clean_loss 2.2127 (2.0618) adv_loss 4.5685 (4.4475) acc 46.8750 (53.3359) (mean 49.4075 many 53.9630 med 56.7873 few 35.4830) lr 2.0611e-03 eta 0:05:03
+epoch [8/10] batch [150/153] time 0.946 (0.951) data 0.000 (0.008) loss 6.1150 (6.4792) clean_loss 1.8840 (2.0495) adv_loss 4.2310 (4.4297) acc 54.6875 (55.2010) (mean 50.2286 many 55.5032 med 56.6775 few 36.5512) lr 2.0611e-03 eta 0:04:53
+Epoch [8/10] val_clean=72.6441 val_robust=3.8426 best_clean=72.6441 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+epoch [9/10] batch [10/153] time 0.946 (0.951) data 0.000 (0.008) loss 6.4893 (6.5452) clean_loss 2.0772 (2.0867) adv_loss 4.4120 (4.4585) acc 48.4375 (54.2977) (mean 50.0701 many 53.8931 med 57.0181 few 37.5039) lr 9.5492e-04 eta 0:04:41
+epoch [9/10] batch [20/153] time 0.945 (0.951) data 0.000 (0.008) loss 6.6861 (6.5710) clean_loss 2.1425 (2.0802) adv_loss 4.5436 (4.4907) acc 54.6875 (54.1126) (mean 50.5391 many 53.7086 med 57.7136 few 38.4713) lr 9.5492e-04 eta 0:04:31
+epoch [9/10] batch [30/153] time 0.953 (0.951) data 0.000 (0.008) loss 6.4221 (6.5460) clean_loss 1.9870 (2.0703) adv_loss 4.4351 (4.4757) acc 48.4375 (52.7702) (mean 50.1640 many 53.4380 med 57.8004 few 37.4352) lr 9.5492e-04 eta 0:04:22
+epoch [9/10] batch [40/153] time 0.947 (0.951) data 0.000 (0.008) loss 6.1911 (6.4659) clean_loss 1.8506 (2.0410) adv_loss 4.3406 (4.4249) acc 48.4375 (51.8710) (mean 49.3987 many 52.1655 med 57.0195 few 37.2800) lr 9.5492e-04 eta 0:04:12
+epoch [9/10] batch [50/153] time 0.953 (0.951) data 0.000 (0.008) loss 6.6319 (6.4251) clean_loss 2.1465 (2.0328) adv_loss 4.4854 (4.3924) acc 46.8750 (52.0946) (mean 49.5360 many 52.9481 med 56.8018 few 37.0784) lr 9.5492e-04 eta 0:04:03
+epoch [9/10] batch [60/153] time 0.954 (0.951) data 0.000 (0.008) loss 6.6304 (6.4642) clean_loss 2.1748 (2.0507) adv_loss 4.4556 (4.4135) acc 57.8125 (53.5488) (mean 50.6886 many 52.9504 med 59.4680 few 37.8072) lr 9.5492e-04 eta 0:03:53
+epoch [9/10] batch [70/153] time 0.948 (0.951) data 0.000 (0.008) loss 6.1572 (6.5119) clean_loss 1.9719 (2.0887) adv_loss 4.1853 (4.4232) acc 57.8125 (51.3405) (mean 50.6320 many 53.5787 med 58.2382 few 38.3202) lr 9.5492e-04 eta 0:03:44
+epoch [9/10] batch [80/153] time 0.949 (0.951) data 0.000 (0.008) loss 6.9449 (6.5784) clean_loss 2.3372 (2.1298) adv_loss 4.6077 (4.4486) acc 50.0000 (51.3376) (mean 50.1066 many 54.4352 med 55.5321 few 38.7266) lr 9.5492e-04 eta 0:03:34
+epoch [9/10] batch [90/153] time 0.949 (0.951) data 0.000 (0.008) loss 6.4075 (6.5212) clean_loss 1.9163 (2.0642) adv_loss 4.4912 (4.4570) acc 53.1250 (54.5021) (mean 50.4704 many 54.1966 med 57.0272 few 38.4737) lr 9.5492e-04 eta 0:03:25
+epoch [9/10] batch [100/153] time 0.957 (0.951) data 0.000 (0.008) loss 6.3105 (6.3916) clean_loss 1.9280 (1.9962) adv_loss 4.3825 (4.3954) acc 56.2500 (56.1531) (mean 51.8265 many 56.6892 med 58.5935 few 38.2586) lr 9.5492e-04 eta 0:03:15
+epoch [9/10] batch [110/153] time 0.954 (0.951) data 0.000 (0.008) loss 6.0578 (6.4096) clean_loss 1.7894 (2.0199) adv_loss 4.2683 (4.3897) acc 60.9375 (55.0725) (mean 50.8840 many 56.2388 med 57.1964 few 37.2721) lr 9.5492e-04 eta 0:03:06
+epoch [9/10] batch [120/153] time 0.952 (0.951) data 0.000 (0.008) loss 6.1740 (6.3768) clean_loss 1.9870 (1.9952) adv_loss 4.1870 (4.3816) acc 53.1250 (56.0784) (mean 50.7681 many 56.1968 med 56.6984 few 37.5158) lr 9.5492e-04 eta 0:02:56
+epoch [9/10] batch [130/153] time 0.953 (0.951) data 0.000 (0.008) loss 6.3230 (6.5035) clean_loss 1.9155 (2.0717) adv_loss 4.4075 (4.4318) acc 57.8125 (53.7175) (mean 50.4219 many 56.7961 med 55.9690 few 36.5136) lr 9.5492e-04 eta 0:02:47
+epoch [9/10] batch [140/153] time 0.953 (0.951) data 0.000 (0.008) loss 6.2434 (6.5453) clean_loss 2.0334 (2.1015) adv_loss 4.2100 (4.4438) acc 56.2500 (53.4357) (mean 50.4053 many 57.1609 med 55.3897 few 36.7086) lr 9.5492e-04 eta 0:02:37
+epoch [9/10] batch [150/153] time 0.955 (0.951) data 0.000 (0.008) loss 6.2643 (6.5905) clean_loss 1.9315 (2.1059) adv_loss 4.3328 (4.4846) acc 53.1250 (54.0651) (mean 49.7138 many 53.3530 med 56.8725 few 37.1163) lr 9.5492e-04 eta 0:02:28
+Epoch [9/10] val_clean=72.7356 val_robust=4.0256 best_clean=72.7356 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+epoch [10/10] batch [10/153] time 0.955 (0.951) data 0.000 (0.008) loss 6.6650 (6.5731) clean_loss 2.1545 (2.0905) adv_loss 4.5105 (4.4826) acc 51.5625 (53.7088) (mean 50.2434 many 54.1650 med 57.6879 few 36.9830) lr 2.4472e-04 eta 0:02:16
+epoch [10/10] batch [20/153] time 0.955 (0.951) data 0.000 (0.008) loss 6.5338 (6.4797) clean_loss 2.1865 (2.0619) adv_loss 4.3473 (4.4177) acc 48.4375 (54.8715) (mean 51.0175 many 55.3198 med 58.2727 few 37.5339) lr 2.4472e-04 eta 0:02:06
+epoch [10/10] batch [30/153] time 0.960 (0.951) data 0.000 (0.008) loss 6.5195 (6.4553) clean_loss 2.0705 (2.0352) adv_loss 4.4490 (4.4201) acc 59.3750 (56.1376) (mean 51.5866 many 55.6564 med 58.1724 few 39.1549) lr 2.4472e-04 eta 0:01:57
+epoch [10/10] batch [40/153] time 0.956 (0.951) data 0.000 (0.008) loss 7.0552 (6.5517) clean_loss 2.2987 (2.0956) adv_loss 4.7566 (4.4561) acc 48.4375 (53.6762) (mean 50.9348 many 52.3635 med 59.4665 few 39.3144) lr 2.4472e-04 eta 0:01:47
+epoch [10/10] batch [50/153] time 0.960 (0.951) data 0.000 (0.008) loss 6.3821 (6.4998) clean_loss 2.0038 (2.0688) adv_loss 4.3783 (4.4310) acc 59.3750 (55.3962) (mean 52.4234 many 54.6161 med 60.6993 few 40.2099) lr 2.4472e-04 eta 0:01:37
+epoch [10/10] batch [60/153] time 0.962 (0.951) data 0.000 (0.008) loss 6.4641 (6.5644) clean_loss 2.0625 (2.1173) adv_loss 4.4016 (4.4471) acc 53.1250 (52.2965) (mean 50.6838 many 53.0507 med 57.6725 few 39.7689) lr 2.4472e-04 eta 0:01:28
+epoch [10/10] batch [70/153] time 0.957 (0.951) data 0.000 (0.008) loss 6.4946 (6.4234) clean_loss 2.0400 (2.0296) adv_loss 4.4546 (4.3938) acc 56.2500 (53.4370) (mean 50.8435 many 55.3116 med 56.1216 few 39.4730) lr 2.4472e-04 eta 0:01:18
+epoch [10/10] batch [80/153] time 0.957 (0.951) data 0.000 (0.008) loss 6.3348 (6.3627) clean_loss 2.0044 (1.9829) adv_loss 4.3303 (4.3798) acc 57.8125 (55.6245) (mean 51.8016 many 55.4016 med 58.4643 few 39.8284) lr 2.4472e-04 eta 0:01:09
+epoch [10/10] batch [90/153] time 0.958 (0.952) data 0.000 (0.008) loss 6.4378 (6.4037) clean_loss 2.0887 (2.0352) adv_loss 4.3491 (4.3685) acc 51.5625 (54.3835) (mean 51.3536 many 54.4051 med 57.4406 few 40.6921) lr 2.4472e-04 eta 0:00:59
+epoch [10/10] batch [100/153] time 0.964 (0.952) data 0.000 (0.008) loss 6.9433 (6.4347) clean_loss 2.2938 (2.0581) adv_loss 4.6494 (4.3765) acc 53.1250 (53.4414) (mean 50.8127 many 53.1852 med 57.3060 few 40.4691) lr 2.4472e-04 eta 0:00:50
+epoch [10/10] batch [110/153] time 0.959 (0.952) data 0.000 (0.008) loss 6.8779 (6.5210) clean_loss 2.1596 (2.1079) adv_loss 4.7183 (4.4132) acc 56.2500 (53.5754) (mean 51.2134 many 55.1701 med 56.7845 few 40.0977) lr 2.4472e-04 eta 0:00:40
+epoch [10/10] batch [120/153] time 0.961 (0.952) data 0.000 (0.007) loss 6.8504 (6.5903) clean_loss 2.2883 (2.1384) adv_loss 4.5622 (4.4519) acc 45.3125 (53.2382) (mean 50.0268 many 51.2008 med 57.7625 few 39.6323) lr 2.4472e-04 eta 0:00:31
+epoch [10/10] batch [130/153] time 0.960 (0.952) data 0.000 (0.007) loss 6.6383 (6.5757) clean_loss 2.0245 (2.1029) adv_loss 4.6138 (4.4728) acc 62.5000 (53.9491) (mean 50.9283 many 53.2063 med 58.3801 few 39.5768) lr 2.4472e-04 eta 0:00:21
+epoch [10/10] batch [140/153] time 0.961 (0.952) data 0.000 (0.007) loss 6.5814 (6.6415) clean_loss 2.0984 (2.1291) adv_loss 4.4830 (4.5125) acc 48.4375 (52.7215) (mean 50.9113 many 52.3910 med 58.5631 few 40.2577) lr 2.4472e-04 eta 0:00:12
+epoch [10/10] batch [150/153] time 0.962 (0.952) data 0.000 (0.007) loss 6.3500 (6.6306) clean_loss 1.9892 (2.1425) adv_loss 4.3608 (4.4881) acc 54.6875 (52.8762) (mean 51.2406 many 52.9896 med 58.3862 few 40.8637) lr 2.4472e-04 eta 0:00:02
+Epoch [10/10] val_clean=73.1016 val_robust=3.6597 best_clean=73.1016 best_robust=4.8490
+Saved best clean checkpoint to ./output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0/model_best_clean.pth.tar
+Finish adversarial fine-tuning
+Time elapsed: 0:27:58
+Evaluate on the test set
+=> result
+* total: 10,000
+* correct: 6,702
+* accuracy: 67.0%
+* error: 33.0%
+* macro_f1: 65.5%
+* class acc: [87. 90. 80. 62. 16. 76. 68. 60. 87. 93. 42. 65. 82. 78. 80. 81. 82. 96.
+ 74. 82. 93. 90. 87. 67. 93. 57. 47. 47. 85. 74. 90. 75. 49. 46. 83. 84.
+ 91. 89. 72. 92. 63. 88. 59. 87. 63. 45. 87. 44. 96. 92. 23. 74. 91. 95.
+ 95. 41. 88. 88. 95. 44. 84. 73. 89. 50. 43. 67. 64. 46. 97. 82. 79. 88.
+ 34. 41. 23. 72. 73. 59. 75. 66. 35. 56. 94. 77. 38. 78. 80. 68. 18. 72.
+ 76. 39. 15. 32. 47. 17.  3. 52. 16. 34.]
+* worst_case_acc: 3.0%
+* hmean_acc: 46.8%
+* gmean_acc: 60.5%
+* many: 73.3%  med: 73.7%  few: 51.9%
+* average: 67.0%

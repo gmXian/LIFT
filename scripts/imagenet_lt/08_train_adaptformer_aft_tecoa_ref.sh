@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT=${ROOT:-/home/yneversky/data/ImageNet}
-GPU=${GPU:-0}
+GPU=${GPU:-1}
 OUT=${OUT:-imagenet_lt_clip_vitb16_adaptformer_aft_pgd2_eps1.0}
 SEED=${SEED:-0}
 BATCH_SIZE=${BATCH_SIZE:-128}

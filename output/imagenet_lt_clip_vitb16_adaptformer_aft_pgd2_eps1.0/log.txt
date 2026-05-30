@@ -1,0 +1,76 @@
+** Config **
+adapter: False
+adapter_dim: None
+adaptformer: True
+adaptformer_scale: learnable
+backbone: CLIP-ViT-B/16
+batch_size: 128
+bias_tuning: False
+bn_tuning: False
+classifier: CosineClassifier
+dataset: ImageNet_LT
+deterministic: True
+expand: 24
+full_tuning: False
+gpu: 0
+imb_factor: None
+init_head: text_feat
+ln_tuning: False
+lora: False
+lora_mlp: False
+loss_type: LA
+lr: 0.01
+mask: False
+mask_ratio: None
+mask_seed: None
+micro_batch_size: 64
+model_dir: None
+momentum: 0.9
+num_epochs: 10
+num_workers: 8
+output_dir: ./output/imagenet_lt_clip_vitb16_adaptformer_aft_pgd2_eps1.0
+partial: None
+prec: amp
+print_freq: 10
+prompt: default
+randaug_times: 1
+resolution: 224
+root: /home/yneversky/data/ImageNet
+scale: 25
+seed: 0
+ssf_attn: False
+ssf_ln: False
+ssf_mlp: False
+test_only: False
+test_train: False
+tte: False
+tte_mode: fivecrop
+vpt_deep: False
+vpt_len: None
+vpt_shallow: False
+weight_decay: 0.0005
+zero_shot: False
+************
+Setting fixed seed: 0
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+Total training points: 115846
+Building model
+Loading CLIP (backbone: CLIP-ViT-B/16)
+Adapter bottle dimension set to 32
+Turning off gradients in the model
+Turning on gradients in the tuner
+Turning on gradients in the head
+Total params: 151006604
+Tuned params: 617868
+Head params: 768000
+Initialize head with text features
+Checkpoint selection uses ImageNet-LT val split: ./datasets/ImageNet_LT/ImageNet_LT_val.txt
+Initialize tensorboard (log_dir=./output/imagenet_lt_clip_vitb16_adaptformer_aft_pgd2_eps1.0/tensorboard)
+Adversarial fine-tuning setting:
+  train attack=PGD-2, norm=L_inf
+  train eps=1.0000/255, alpha=1.0000/255
+  random_start=True, adv_lambda=1.0
+Validation checkpoint selection setting:
+  val clean metric: clean accuracy on val split
+  val robust metric: PGD-2, eps=1.0000/255, alpha=1.0000/255

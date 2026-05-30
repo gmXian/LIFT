@@ -1,0 +1,5 @@
+model_dir,dataset,backbone,attack,eps,alpha,steps,split,num_classes,num_samples,clean_micro,adv_micro,clean_macro,adv_macro,gap_micro,gap_macro,adv_worst
+output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0,CIFAR100_IR100,CLIP-ViT-B/16,fgsm,0.5,0.5,1,all,100,10000,0.6801,0.2352,0.6801000000000001,0.23520000000000002,-0.4449000000000001,-0.44490000000000013,0.0
+output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0,CIFAR100_IR100,CLIP-ViT-B/16,fgsm,0.5,0.5,1,many,35,3500,0.732,0.2757142857142857,0.732,0.27571428571428575,-0.4562857142857143,-0.45628571428571424,0.0
+output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0,CIFAR100_IR100,CLIP-ViT-B/16,fgsm,0.5,0.5,1,medium,35,3500,0.7482857142857143,0.2885714285714286,0.7482857142857143,0.28857142857142853,-0.45971428571428574,-0.4597142857142858,0.0
+output/cifar100_ir100_clip_vitb16_classifier_only_aft_pgd2_eps1.0,CIFAR100_IR100,CLIP-ViT-B/16,fgsm,0.5,0.5,1,few,30,3000,0.54,0.12566666666666668,0.5399999999999999,0.12566666666666665,-0.41433333333333333,-0.4143333333333333,0.0
